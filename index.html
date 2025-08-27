@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시간표 달력</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>시간표 달력</h1>
+        
+        <div class="controls">
+            <div class="date-range">
+                <label>기간 선택:</label>
+                <input type="date" id="startDate">
+                <span>~</span>
+                <input type="date" id="endDate" value="2026-02-01">
+                <button onclick="updateCalendar()">달력 업데이트</button>
+            </div>
+            
+            <div class="today-info">
+                <span>오늘: <strong id="todayDate"></strong></span>
+                <span>남은 일수: <strong id="daysRemaining"></strong></span>
+                <span>남은 수업: <strong id="classesRemaining"></strong></span>
+                <span>이번주 남은 수업: <strong id="weeklyClassesRemaining"></strong></span>
+                <span>이번달 남은 수업: <strong id="monthlyClassesRemaining"></strong></span>
+            </div>
+        </div>
+
+        <div id="calendarView" class="calendar-container">
+            <div class="calendar-header">
+                <button onclick="previousMonth()">&lt;</button>
+                <h2 id="currentMonth">2024년 8월</h2>
+                <button onclick="nextMonth()">&gt;</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="weekdays">
+                    <div>일</div>
+                    <div>월</div>
+                    <div>화</div>
+                    <div>수</div>
+                    <div>목</div>
+                    <div>금</div>
+                    <div>토</div>
+                </div>
+                <div id="calendarDays" class="days"></div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
