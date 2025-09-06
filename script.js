@@ -22,6 +22,9 @@ let currentDate = new Date(); // 오늘 날짜
 let startDate = new Date(); // 오늘 날짜
 let endDate = new Date(2026, 1, 1); // 2026년 2월 1일
 
+// 완료된 수업 추적 (날짜별 교시별)
+let completedClasses = {};
+
 // 한국 시간으로 오늘 날짜 가져오기
 function getKoreanDate() {
     const now = new Date();
@@ -29,8 +32,43 @@ function getKoreanDate() {
     return koreanTime;
 }
 
+// 수업 완료 상태 확인
+function isClassCompleted(date, period) {
+    const dateKey = formatDate(date);
+    return completedClasses[dateKey] && completedClasses[dateKey][period] === true;
+}
+
+// 수업 완료 상태 토글
+function toggleClassCompletion(date, period) {
+    const dateKey = formatDate(date);
+    if (!completedClasses[dateKey]) {
+        completedClasses[dateKey] = {};
+    }
+    completedClasses[dateKey][period] = !completedClasses[dateKey][period];
+    
+    // 로컬 스토리지에 저장
+    localStorage.setItem('completedClasses', JSON.stringify(completedClasses));
+    
+    // 달력 다시 렌더링
+    renderCalendar();
+    updateClassesRemaining();
+    updateWeeklyClassesRemaining();
+    updateMonthlyClassesRemaining();
+}
+
+// 로컬 스토리지에서 완료된 수업 로드
+function loadCompletedClasses() {
+    const saved = localStorage.getItem('completedClasses');
+    if (saved) {
+        completedClasses = JSON.parse(saved);
+    }
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    // 완료된 수업 로드
+    loadCompletedClasses();
+    
     // 오늘 날짜 설정 (한국 시간)
     const today = getKoreanDate();
     const todayString = today.toISOString().split('T')[0];
@@ -96,7 +134,9 @@ function updateClassesRemaining() {
     
     while (currentDate <= endDate) {
         const classes = getClassesForDate(currentDate);
-        totalClasses += classes.length;
+        // 완료되지 않은 수업만 카운트
+        const incompleteClasses = classes.filter(classInfo => !isClassCompleted(currentDate, classInfo.period));
+        totalClasses += incompleteClasses.length;
         currentDate.setDate(currentDate.getDate() + 1);
     }
     
@@ -128,7 +168,9 @@ function updateWeeklyClassesRemaining() {
     
     while (currentDate <= actualWeekEnd) {
         const classes = getClassesForDate(currentDate);
-        totalClasses += classes.length;
+        // 완료되지 않은 수업만 카운트
+        const incompleteClasses = classes.filter(classInfo => !isClassCompleted(currentDate, classInfo.period));
+        totalClasses += incompleteClasses.length;
         currentDate.setDate(currentDate.getDate() + 1);
     }
     
@@ -155,7 +197,9 @@ function updateMonthlyClassesRemaining() {
     
     while (currentDate <= actualMonthEnd) {
         const classes = getClassesForDate(currentDate);
-        totalClasses += classes.length;
+        // 완료되지 않은 수업만 카운트
+        const incompleteClasses = classes.filter(classInfo => !isClassCompleted(currentDate, classInfo.period));
+        totalClasses += incompleteClasses.length;
         currentDate.setDate(currentDate.getDate() + 1);
     }
     
@@ -220,13 +264,33 @@ function renderCalendar() {
         const classes = getClassesForDate(date);
         classes.forEach(classInfo => {
             const classElement = document.createElement('div');
+            classElement.className = 'class-item-container';
+            
+            // 체크 아이콘
+            const checkIcon = document.createElement('span');
+            checkIcon.className = 'check-icon';
+            checkIcon.textContent = '✓';
+            checkIcon.onclick = () => toggleClassCompletion(date, classInfo.period);
+            
+            // 수업 정보
+            const classInfoElement = document.createElement('span');
+            classInfoElement.className = 'class-info';
             if (classInfo.class === '동아리') {
-                classElement.className = 'class-item class-club';
-                classElement.textContent = `${classInfo.period}교시 동아리`;
+                classInfoElement.className += ' class-club';
+                classInfoElement.textContent = `${classInfo.period}교시 동아리`;
             } else {
-                classElement.className = `class-item class-${classInfo.class}`;
-                classElement.textContent = `${classInfo.period}교시 ${classInfo.class}반`;
+                classInfoElement.className += ` class-${classInfo.class}`;
+                classInfoElement.textContent = `${classInfo.period}교시 ${classInfo.class}반`;
             }
+            
+            // 완료 상태 확인 및 스타일 적용
+            if (isClassCompleted(date, classInfo.period)) {
+                classInfoElement.classList.add('completed');
+                checkIcon.classList.add('checked');
+            }
+            
+            classElement.appendChild(checkIcon);
+            classElement.appendChild(classInfoElement);
             dayElement.appendChild(classElement);
         });
         

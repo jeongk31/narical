@@ -187,6 +187,63 @@ h1 {
 .class-10 { background-color: #d35400; }
 .class-club { background-color: #8e44ad; }
 
+/* 수업 아이템 컨테이너 */
+.class-item-container {
+    display: flex;
+    align-items: center;
+    margin: 1px 0;
+    font-size: 11px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+/* 체크 아이콘 */
+.check-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-color: #ecf0f1;
+    color: #7f8c8d;
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+    text-align: center;
+    line-height: 14px;
+    font-size: 10px;
+    cursor: pointer;
+    margin-right: 4px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.check-icon:hover {
+    background-color: #d5dbdb;
+}
+
+.check-icon.checked {
+    background-color: #27ae60;
+    color: white;
+    border-color: #27ae60;
+}
+
+/* 수업 정보 */
+.class-info {
+    flex: 1;
+    padding: 2px 4px;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 0 3px 3px 0;
+}
+
+.class-info.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+    background-color: #95a5a6 !important;
+    color: #2c3e50 !important;
+}
+
 
 
 @media (max-width: 768px) {
